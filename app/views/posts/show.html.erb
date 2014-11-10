@@ -1,0 +1,54 @@
+<h1><%= @post.title %></h1>
+
+<table>
+  <% [:title, :url, :content, :sub_id, :author_id].each do |attr_name| %>
+    <tr>
+      <th><%= attr_name %></th>
+      <td><%= @post.send(attr_name) %></td>
+    </tr>
+  <% end %>
+</table>
+
+<% if @post.author == current_user %>
+  <%= link_to "Edit #{@post.title}", "#{@post.id}/edit" %>
+<% end %>
+
+
+<h2>Comments</h2>
+<table>
+  <tr>
+    <th>Content</th>
+    <th>author</th>
+  </tr>
+  <% @post.comments.order("created_at").each do |comment| %>
+    <tr>
+      <td><%= comment.content %></td>
+      <td><%= comment.author.username %></td>
+    </tr>
+  <% end %>
+</table>
+
+
+<form action="<%= comments_url %>" method="POST">
+  <input
+    type="hidden"
+    name="authenticity_token"
+    value="<%= form_authenticity_token %>">
+  <input
+    type="hidden"
+    name="comment[author_id]"
+    value="<%= current_user.id %>">
+  <input
+    type="hidden"
+    name="comment[post_id]"
+    value="<%= @post.id %>">
+
+  <label>
+    Content
+    <textarea name="comment[content]"></textarea>
+  </label>
+
+    <br>
+  <input type="submit" value="Save Comment">
+
+</form>

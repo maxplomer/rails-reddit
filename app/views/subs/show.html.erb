@@ -1,0 +1,94 @@
+<h1><%= @sub.title %></h1>
+
+<table>
+  <% [:title, :description, :moderator_id].each do |attr_name| %>
+    <tr>
+      <th><%= attr_name %></th>
+      <td><%= @sub.send(attr_name) %></td>
+    </tr>
+  <% end %>
+</table>
+
+<% if @sub.moderator == current_user %>
+  <%= link_to "Edit #{@sub.title}", edit_sub_url(@sub) %>
+<% end %>
+
+<h2>Posts</h2>
+<table>
+  <tr>
+    <th>Upvote</th>
+    <th>Downvote</th>
+    <th>Karma</th>
+    <th>Title</th>
+    <th>URL</th>
+    <th>Author</th>
+    <th>Date</th>
+  </tr>
+  <% @sub.posts.order("created_at").each do |post| %>
+    <tr>
+      <td>
+        <form action="<%= upvote_url %>" method="POST">
+          <input
+          type="hidden"
+          name="authenticity_token"
+          value="<%= form_authenticity_token %>">
+          <input
+          type="hidden"
+          name="vote[voteable_id]"
+          value="<%= post.id %>">
+          <input
+          type="hidden"
+          name="vote[voteable_type]"
+          value="Post">
+          <input type="submit" value="Upvote">
+        </form>
+      </td>
+      <td>
+        <form action="<%= downvote_url %>" method="POST">
+          <input
+          type="hidden"
+          name="authenticity_token"
+          value="<%= form_authenticity_token %>">
+          <input
+          type="hidden"
+          name="vote[voteable_id]"
+          value="<%= post.id %>">
+          <input
+          type="hidden"
+          name="vote[voteable_type]"
+          value="Post">
+          <input type="submit" value="Downvote">
+        </form>
+      </td>
+      <td>
+        <% count = 0 %>
+        <% post.votes.each{ |vote| count += vote.value } %>
+        <%= count %>
+      </td>
+      <td><%= post.title %></td>
+      <td><%= post.url %></td>
+      <td><%= post.author.username %></td>
+      <td><%= post.created_at %></td>
+    </tr>
+  <% end %>
+</table>
+
+<%= link_to "Make new post", new_sub_post_url(@sub) %>
+
+<h2>Cross Posts</h2>
+<table>
+  <tr>
+    <th>Title</th>
+    <th>URL</th>
+    <th>Author</th>
+    <th>Date</th>
+  </tr>
+  <% @sub.cross_posts.order("created_at").each do |post| %>
+    <tr>
+      <td><%= post.title %></td>
+      <td><%= post.url %></td>
+      <td><%= post.author.username %></td>
+      <td><%= post.created_at %></td>
+    </tr>
+  <% end %>
+</table>

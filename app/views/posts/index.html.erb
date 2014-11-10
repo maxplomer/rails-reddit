@@ -1,0 +1,9 @@
+<h1>All current posts</h1>
+
+<ul>
+  <% @posts.each do |post| %>
+    <li><%= link_to post.title, "posts/#{post.id}" %></li>
+  <% end %>
+</ul>
+
+<%= link_to "Create post", new_sub_post_url %>
